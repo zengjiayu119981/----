@@ -39,7 +39,7 @@ def parse_html(response):
 
 
 # 保存文件
-def save_csv(dic, filename):
+def save_exel(dic, filename):
     df = pd.DataFrame(dic)
     df.to_excel(filename, index=False)
 
@@ -64,7 +64,7 @@ def run():
         lt1 = parse_html(res)
         # 列表拼接
         lt2.extend(lt1)
-    save_csv(lt2, filename)
+    save_exel(lt2, filename)
 
 
 # 异常处理机制
