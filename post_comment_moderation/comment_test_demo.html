@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Moderation</title>
+</head>
+<body>
+    <div>
+        <label for="commentInput">Enter Text:</label>
+        <textarea id="commentInput" rows="4" cols="50"></textarea>
+    </div>
+    <br>
+    <label for="modeSelect">Select Mode:</label>
+    <select id="modeSelect">
+        <option value="fast">Fast</option>
+        <option value="accurate">Accurate</option>
+        <option value="strict">Strict</option>
+    </select>
+    <br>
+    <button onclick="sendData()">Submit</button>
+    <br>
+    <div id="result"></div>
+
+    <script>
+        function sendData() {
+            var commentInput = document.getElementById("commentInput").value;
+            var modeSelect = document.getElementById("modeSelect");
+            var mode = modeSelect.options[modeSelect.selectedIndex].value;
+
+            var comments = commentInput.split('\n').filter(Boolean);
+
+            var data = {
+                comments: comments,
+                mode: mode
+            };
+
+            fetch('http://127.0.0.1:9102/comment/moderation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResult(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function displayResult(result) {
+            var resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "<h3>Results:</h3>";
+
+            for (var comment in result.results) {
+                var commentResult = result.results[comment];
+                var resultString = "Comment: " + comment + "<br>Label: " + commentResult.label + "<br>Score: " + commentResult.score + "<br><br>";
+                resultDiv.innerHTML += resultString;
+            }
+
+            resultDiv.innerHTML += "Cost Time: " + result.costSeconds + " seconds";
+        }
+    </script>
+</body>
+</html>
