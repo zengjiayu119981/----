@@ -3,7 +3,7 @@
     <div class="uk-width-2-3@l uk-first-column">
       <div class="widjet__head">
         <h3 class="uk-text-lead">{{ title }}</h3>
-        <div><button class="btn btn-success">添加</button></div>
+        <div><button @click="publish()" class="btn btn-success">添加</button></div>
       </div>
       <div v-for="item of list" :key="item.id" >
         <post_card :title="item.title" :author="item.user" :content="item.content" :tag="item.tag" :post_id = "item.post_id">
@@ -37,10 +37,14 @@ export default {
     watchEffect(()=>{
       console.log(title.value)
     })
+    function publish(){
+      router.push({name:'post_publish',params:{title:title.value}})
+    }
 
     return {
       list,
       title,
+      publish,
     }
   },
 };

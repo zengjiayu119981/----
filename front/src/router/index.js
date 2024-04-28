@@ -4,6 +4,7 @@ const plates = ()=>import('../components/plates.vue')
 const friends = ()=>import('../components/friends.vue')
 const plate = ()=>import('../components/plate_template.vue')
 const post = ()=>import('../components/post.vue')
+const postFrom = ()=>import('../components/postForm.vue')
 
 
 const routes=[
@@ -12,7 +13,9 @@ const routes=[
     {path:'/plates',component: plates},
     {path:'/friends',component: friends},
     {path:'/plate/:title',component: plate},
-    {path:'/post/:id',component: post}
+    {path:'/post/:id',component: post},
+    {path:'/post_publish/:title',component: postFrom,name:'post_publish'},
+    {path:'/:pathMatch(.*)*',redirect:'/home'}
 ]
 
 const router = createRouter({  

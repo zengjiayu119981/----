@@ -93,3 +93,7 @@ class managerInfo(models.Model):
 
     #性别
     gender = models.CharField(max_length=1, verbose_name="性别" ,null=True)
+
+
+class UploadedFile(models.Model):
+    file = models.FileField(upload_to='uploads/')
