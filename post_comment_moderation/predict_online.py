@@ -198,6 +198,7 @@ def comment_moderation():
     data = json.loads(request.get_data())
     print('request_time:{}，请求数据：{}'.format(req_time, data))
     comments = data.get('comments')
+    print(comments)
     mode = data.get('mode')
     if mode == 'fast':
         res = getCommentModerationResult(comments)

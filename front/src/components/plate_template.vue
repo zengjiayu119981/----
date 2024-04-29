@@ -6,7 +6,7 @@
         <div><button @click="publish()" class="btn btn-success">添加</button></div>
       </div>
       <div v-for="item of list" :key="item.id" >
-        <post_card :title="item.title" :author="item.user" :content="item.content" :tag="item.tag" :post_id = "item.post_id">
+        <post_card :title="item.title" :author="item.user" :content="item.content"  :post_id = "item.post_id">
         </post_card>
       </div>
       

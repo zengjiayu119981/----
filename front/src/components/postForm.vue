@@ -30,6 +30,9 @@
         post: {
           title: '',
           content: '',
+          plate:'',
+          user:'',
+          plate:'',
           image: null, // 用于存储图片文件
         },
         uploadProgress: 0, // 图片上传进度
@@ -40,6 +43,11 @@
         // 确保标题和内容都不为空
         return this.post.title && this.post.content;
       },
+    },
+    mounted() {
+      // 获取板块信息
+      this.post.plate = this.$route.params.title;
+      this.post.user = localStorage.getItem('username');
     },
     methods: {
       async submitPost() {

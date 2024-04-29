@@ -69,16 +69,13 @@ class post(models.Model):
     plate = models.ForeignKey(plate, on_delete = models.SET_NULL,to_field='title', null=True)
 
     #创建时间
-    create_time = models.DateTimeField()
+    create_time = models.DateTimeField(null=True,auto_now_add=True)
 
     #内容
     content = models.TextField()
 
     #最新更新时间
-    update_time = models.DateTimeField()
-
-    #标签
-    tags = models.CharField(max_length=100, verbose_name='标签', null=True)
+    update_time = models.DateTimeField(null=True,auto_created=True)
 
     def __str__(self) -> str:
         return self.title

@@ -5,6 +5,14 @@ from django.core import serializers
 from django.forms.models import model_to_dict
 from django.utils import timezone
 from api.models import post
+from django import forms
+import requests
+
+class PostModelForm(forms.ModelForm):
+    class Meta:
+        model = post
+        fields = ['title', 'content', 'plate', 'user']
+        
 
 
 def get_posts_list(request):
@@ -53,17 +61,49 @@ def upload_file(request):
 def create_post(request):
     if request.method == 'POST':
         # 假设前端发送的数据结构与下面一致
-        obj = post(request.POST) 
-        data = request.POST
-        title = data.get('title')
-        content = data.get('content')
-        # 注意：这里没有处理文件上传，如果需要处理文件，请参考前面关于文件上传的回答  
-        # 示例：简单地记录接收到的数据
-        # 实际应用中，你可能会将这些数据保存到数据库或其他存储中
-        response_data = {
-            'message': f"Received post with title: '{title}' and content: '{content}'",
-            'received_at': timezone.now().isoformat(),
-        }
+        response_data = {}
+        obj = PostModelForm(request.POST) 
+        
+        print(request.POST)
+        if obj.is_valid():
+            title = obj.cleaned_data['title']
+            content = obj.cleaned_data['content']
+            response_data = requests.post(url="http://127.0.0.1:9102/comment/moderation",json={"comments":[content],'mode':'fast'})
+            if response_data.status_code == 200:
+                response_data = response_data.json()
+                moderation_result = 0
+                print(response_data['results'])
+                for coment,result in response_data.get('results').items():
+                    print(coment,"  label : ",result['label'])
+                    if result['label'] == 1:
+                        moderation_result = 1
+                        break
+
+                if moderation_result == 0:
+                    obj.save()
+                    response_data = {
+                        'message': f"Received post with title: '{title}' and content: '{content}'",
+                        'received_at': timezone.now().isoformat(),
+                    }
+                    
+
+                else:
+                    response_data = {
+                        'message': f"你的言论有不良信息",
+                        'received_at': timezone.now().isoformat(),
+                    }
+            else:
+                response_data = {
+                    'message': f"未成功发布",
+                    'received_at': timezone.now().isoformat(),
+                }
+        else:
+            for field, errors in obj.errors.items():
+                print(f"字段 '{field}' 验证失败，原因：")
+                for error in errors:
+                    print(f"- {error}") 
         return JsonResponse(response_data, status=201)
+                 
     else:
+
         return JsonResponse({"error": "Invalid request method"}, status=405)

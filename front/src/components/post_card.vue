@@ -4,7 +4,6 @@
             <div class="card__media"><a :href="'/post/'+post_id"><img src=""
                         :alt="title"></a></div>
             <div class="card__info"><a class="card__title" :href="'/post/'+post_id"> {{ title }}</a>
-                <div class="card__discussion"><b>{{tag}}</b></div>
                 <div class="card__date"><span>{{ content }}</span></div>
                 <div class="card__author"><span>by  </span>{{ author }}</div>
             </div>
