@@ -6,7 +6,7 @@
         <div><button @click="publish()" class="btn btn-success">添加</button></div>
       </div>
       <div v-for="item of list" :key="item.id" >
-        <post_card :title="item.title" :author="item.user" :content="item.content"  :post_id = "item.post_id">
+        <post_card :title="item.title" :author="item.user" :content="item.content"  :post_id = "item.post_id" :image="item.image">
         </post_card>
       </div>
       
@@ -25,13 +25,16 @@ export default {
   },
   setup() {
     const list =ref([])
+    const page = ref(1)
+    const page_num =ref(1)
     const router = useRouter()
     const title = computed(()=>{
       return router.currentRoute.value.params.title
     })
     onMounted(()=>{
       get_posts_list(title.value).then(res=>{
-        list.value = res
+        list.value = res.data
+        page_num.value = res.page_num
       })
     })
     watchEffect(()=>{
@@ -44,6 +47,7 @@ export default {
     return {
       list,
       title,
+      page_num,
       publish,
     }
   },

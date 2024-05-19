@@ -3,9 +3,9 @@ import os
 import torch.nn as nn
 from tqdm import tqdm
 import time
-from comment_moderation.model import textCNN
-import comment_moderation.data_process.word2vec as gv
-import comment_moderation.textCNN_data as textCNN_data
+from model import textCNN
+import data_process.word2vec as gv
+import textCNN_data as textCNN_data
 
 # 加载词表映射
 word2ind, ind2word = gv.get_word_dict('./data/result/word_list.txt')

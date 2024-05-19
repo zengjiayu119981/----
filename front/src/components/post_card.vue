@@ -1,7 +1,7 @@
 <template>
     <div class="card --horizontal --small">
         <div class="card__box">
-            <div class="card__media"><a :href="'/post/'+post_id"><img src=""
+            <div class="card__media"><a :href="'/post/'+post_id"><img v-if="image!='http://localhost:8000/media/'" :src="image"
                         :alt="title"></a></div>
             <div class="card__info"><a class="card__title" :href="'/post/'+post_id"> {{ title }}</a>
                 <div class="card__date"><span>{{ content }}</span></div>
@@ -14,7 +14,7 @@
 
 <script>
 export default {
-    props:['title',"author","content","tag","post_id"]
+    props:['title',"author","content","tag","post_id",'image']
 }
 </script>
 

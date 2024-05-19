@@ -12,13 +12,13 @@
         </div>
         <div class="form-group">
           <label for="image">图片上传：</label>
-          <input type="file" id="image" @change="handleImageUpload" />
+          <input type="file" ref="image" @change="handleImageUpload" />
+        </div>
+        <div class="form-group">
+          <img v-if="imageUrl" :src="imageUrl" alt="预览图片">
         </div>
         <button type="submit" :disabled="!isFormValid">发布</button>
       </form>
-      <div v-if="uploadProgress" class="progress-bar">
-        {{ uploadProgress }}%
-      </div>
     </div>
   </template>
   
@@ -33,8 +33,8 @@
           plate:'',
           user:'',
           plate:'',
-          image: null, // 用于存储图片文件
         },
+        imageUrl: '',
         uploadProgress: 0, // 图片上传进度
       };
     },
@@ -53,13 +53,34 @@
       async submitPost() {
         // 这里可以添加验证逻辑，然后调用API发布帖子
         try {
-          if (this.post.image) {
-            // 假设这里有一个上传图片的方法uploadImage并返回进度
-            await this.uploadImage();
+          const form_data = new FormData();
+          if (this.imageUrl) {
+            form_data.append('image', this.$refs.image.files[0]);
           }
+          else {
+            form_data.append('image', '');
+          }
+          form_data.append('title', this.post.title);
+          form_data.append('content', this.post.content);
+          form_data.append('plate', this.post.plate);
+          form_data.append('user', this.post.user);
+
           // 发布帖子到服务器
-          await Server.post('/api/public/post', this.post);
-          this.$router.push('/posts'); // 发布成功后跳转到帖子列表
+          await Server.post('/api/public/post', form_data,{
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }).then(response => {
+            if (response["message"]=='未查询到登录信息'){
+              alert("未查询到登录信息")
+            }
+            else {
+              alert(response["message"])
+              this.$router.push('/plate/'+this.post.plate); // 发布成功后跳转到帖子列表
+            }
+              
+          });
+          
         } catch (error) {
           console.error('发布失败:', error);
         }
@@ -68,30 +89,15 @@
         // 处理图片上传事件
         const file = event.target.files[0];
         if (file) {
-          this.post.image = file;
-          // 可以在这里预览图片或直接开始上传
+          this.imageUrl = file;
         }
-      },
-      async uploadImage() {
-        // 这是一个示例方法，实际应使用 FormData 和 axios 或其他库上传文件
-        const formData = new FormData();
-        formData.append('image', this.post.image);
-        const config = {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          onUploadProgress: progressEvent => {
-            this.uploadProgress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-          },
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imageUrl = e.target.result;
         };
-        try {
-          const response = await Server.post('/api/upload', formData, config);
-          // 假设上传成功后返回了图片URL，你可以将其保存到post对象中
-          this.post.imageUrl = response.data.url;
-        } catch (error) {
-          console.error('图片上传失败:', error);
-        } finally {
-          this.uploadProgress = 0; // 重置进度条
-        }
+        reader.readAsDataURL(file);
       },
+      
     },
   };
   </script>

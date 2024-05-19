@@ -4,7 +4,7 @@ from django.utils.deprecation import MiddlewareMixin
 
 
 
-API_USER = ["/api/post"]
+API_USER = ["/api/public/post"]
 
 class tokenMiddleware(MiddlewareMixin):
     def process_request(self, request):

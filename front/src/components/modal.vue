@@ -10,10 +10,11 @@
                     <ul>
                         <li><span>前端:vue</span></li>
                         <li><span>后端:django</span></li>
+						<li><span>文本分类:textcnn</span></li>
+						<li><span>模型部署:flask</span></li>
                     </ul>
                     <ul>
-                        <li><a href="#!">browse all articles</a></li>
-                        <li><a href="#!">Send Feedback</a></li>
+                        <li><a href="https://github.com/zengjiayu119981/Capstone-project">github:zengjiayu119981</a></li>
                     </ul>
                 </div>
 				<button type="button" @click="close">关 闭</button>

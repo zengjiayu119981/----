@@ -9,14 +9,9 @@
         <li>
           <router-link to="/plates"><i class="bi bi-receipt-cutoff"></i><span>论坛</span></router-link>
         </li>
-        <li>
+        <!-- <li>
           <router-link to="/friends"><i class="bi bi-person-video2"></i><span>朋友</span></router-link>
-        </li>
-        <li>
-          <a href="08_wallet.html"
-            ><i class="bi bi-heart"></i><span>我关心的</span></a
-          >
-        </li>
+        </li> -->
         
         <li class="uk-nav-header">Support</li>
         <li >

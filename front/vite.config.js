@@ -4,6 +4,11 @@ import path from 'path'
 import inject from '@rollup/plugin-inject'
 import { resolve } from 'path'
 
+
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -13,7 +18,11 @@ export default defineConfig({
       jQuery: "jquery",
       "windows.jQuery": "jquery"
     }),
-      
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }), Components({
+     resolvers: [ElementPlusResolver()],
+    }),
   ],
   build: {
     assetsDir: 'static',

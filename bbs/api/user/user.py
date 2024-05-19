@@ -3,7 +3,10 @@ from django.http import JsonResponse
 from django import forms
 from api import models
 from api.utils.token import create_token
-import time
+from django.forms.models import model_to_dict
+import time,math,requests
+from django.core.files.storage import default_storage
+
 # Create your views here.
 #user ModelForm
 class UserInfoModelForm(forms.ModelForm):
@@ -58,3 +61,23 @@ def register(request):
             return JsonResponse({'msg':''})
     #重定位至登录界面
     return redirect("/login/")
+
+
+def get_user_posts(request):
+    username = request.GET.get('username')
+    posts_list = models.post.objects.filter(user=username)
+    data=[]
+    for post in posts_list:
+        d = model_to_dict(post)
+        d["content"] = post.content[:30]
+        d['image'] = default_storage.url(d['image'])
+        d['image'] = request.build_absolute_uri(d['image'])
+        data.append(d)
+    print(data)
+    print("返回帖子列表",data)
+    page_data={
+        "page_num":posts_list.count(),
+        "data":data
+    }
+    return JsonResponse(page_data, safe=False)
+        

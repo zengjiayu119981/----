@@ -3,7 +3,7 @@
         <div class="card__box">
           <div class="card__media">
             <a :href="'/plate/'+title"
-              ><img src="" :alt="title"
+              ><img :src="'http://localhost:8000/media/plate/'+title+'.jpg'" :alt="title"
             /></a>
           </div>
           <div class="card__info">
@@ -17,19 +17,10 @@
 
 <script>
 import { onMounted, ref } from 'vue';
-import { get_plate_pic } from '../API/get_plate_pic';
 
 
 export default {
     props:["title"],
-    setup(props) {
-      onMounted(() => {
-        get_plate_pic(props.title).then(res => {
-          pic_url.value=res.pic
-        })
-      })
-   
-    }
 }
 </script>
 
