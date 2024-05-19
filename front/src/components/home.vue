@@ -20,7 +20,7 @@
             <li v-for="(post, index) in posts" :key="index" class="post">
                 <h3><a :href="'/post/'+post.post_id">{{ post.title }}</a></h3>
                 <p>{{ post.content }}</p>
-                <a class="uk-button uk-button-danger">
+                <a class="uk-button uk-button-danger" :href="'http://localhost:8000/user/post/delet?post_id='+post.post_id">
                     <i class="bi bi-trash"></i>
                     <span class="uk-margin-small-left">删除</span>
                 </a>
