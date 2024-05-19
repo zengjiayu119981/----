@@ -27,7 +27,7 @@ class CommentModelForm(forms.ModelForm):
 def get_posts_list(request):
 
     title = request.POST.get('title')
-    posts_list = models.post.objects.filter(plate_id=title)
+    posts_list = models.post.objects.filter(plate_id=title).order_by('-create_time')
     data=[]
     for post in posts_list:
         d = model_to_dict(post)

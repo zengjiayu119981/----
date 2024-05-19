@@ -1,6 +1,6 @@
 from django.urls import path
 from django.views.generic.base import TemplateView
-from api.user.user import user_login,register,get_user_posts
+from api.user.user import user_login,register,get_user_posts,user_post_delete,get_user_comments
 from api.plate.plate import get_plate_list
 from api.post.post import get_posts_list,get_post_detail,create_post,get_comments,create_comment
 
@@ -15,5 +15,7 @@ urlpatterns = [
     path('public/post',create_post),
     path("comments",get_comments),
     path('publish/comment',create_comment),
-    path('user/posts',get_user_posts)
+    path('user/posts',get_user_posts),
+    path("user/post/delete",user_post_delete),
+    path("user/comments",get_user_comments)
 ]
