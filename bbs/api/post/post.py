@@ -28,17 +28,24 @@ def get_posts_list(request):
 
     title = request.POST.get('title')
     posts_list = models.post.objects.filter(plate_id=title).order_by('-create_time')
+    current_page = request.POST.get('current_page')
+    current_page = int(current_page)
+    start = (current_page-1)*10
+    end = current_page*10
+    print(title,current_page)
+    if end>posts_list.count():
+        end = posts_list.count()
     data=[]
-    for post in posts_list:
-        d = model_to_dict(post)
-        d["content"] = post.content[:50]
+    for i in range(start,end):
+        d = model_to_dict(posts_list[i])
+        d["content"] = posts_list[i].content[:50]
         d['image'] = default_storage.url(d['image'])
         d['image'] = request.build_absolute_uri(d['image'])
         data.append(d)
     print(data)
     print("返回帖子列表",data)
     page_data={
-        "page_num":posts_list.count(),
+        "total":posts_list.count(),
         "data":data
     }
     return JsonResponse(page_data, safe=False)
@@ -107,24 +114,22 @@ def create_post(request):
 
 def get_comments(request):
     post_id = request.POST.get('post_id')
-    page = request.POST.get('page')
+    current_page = request.POST.get('current_page')
+    print(current_page)
+    current_page = int(current_page)
     comments = models.comment.objects.filter(post_id=post_id).order_by('-create_time')
-    num = comments.count()
-    # start = (page-1)*10
-    # end = page*10
-    # if end>num:
-    #     end = num
+    start = (current_page-1)*10
+    end = current_page*10
+    if end>comments.count():
+        end = comments.count()
     data=[]
-    # for i in range(start,end):
-    #     d = model_to_dict(comments[i])
-    #     data.append(d)
-    for comment in comments:
-        d = model_to_dict(comment)
-        d["create_time"] = comment.create_time.astimezone(timezone.utc).isoformat()
+    for i in range(start,end):
+        d = model_to_dict(comments[i])
+        d["create_time"] = comments[i].create_time.astimezone(timezone.utc).isoformat()
         print(d)
         data.append(d)
     print("post_id:",post_id,"    comments:\n",data)
-    return JsonResponse({"data":data,"page_num":num/10.0}, safe=False)
+    return JsonResponse({"data":data,"total":comments.count()}, safe=False)
 
 
 def create_comment(request):

@@ -6,6 +6,7 @@ from api.utils.token import create_token
 from django.forms.models import model_to_dict
 import time,math,requests
 from django.core.files.storage import default_storage
+from django.db.models import F
 
 # Create your views here.
 #user ModelForm
@@ -15,6 +16,7 @@ class UserInfoModelForm(forms.ModelForm):
     class Meta:
         model = models.userInfo   # 与models建立了依赖关系
         fields = ['password']
+
 
 #用户登录
 def user_login(request):
@@ -65,11 +67,17 @@ def register(request):
 
 def get_user_posts(request):
     username = request.GET.get('username')
-    posts_list = models.post.objects.filter(user=username)
+    currentpage = request.GET.get('currentpage')
+    currentpage = int(currentpage)
+    posts_list = models.post.objects.filter(user=username).order_by('-create_time')
     data=[]
-    for post in posts_list:
-        d = model_to_dict(post)
-        d["content"] = post.content[:30]
+    start_item = (currentpage-1)*10
+    end_item = currentpage*10
+    if end_item > posts_list.count():
+        end_item = posts_list.count()
+    for i in range(start_item,end_item):
+        d = model_to_dict(posts_list[i])
+        d["content"] = posts_list[i].content[:30]
         d['image'] = default_storage.url(d['image'])
         d['image'] = request.build_absolute_uri(d['image'])
         data.append(d)
@@ -85,13 +93,19 @@ def user_post_delete(request):
     post_id = request.POST.get("post_id")
     username = request.META.get('HTTP_USERNAME')
     post = models.post.objects.filter(user=username,post_id=post_id)
-    print(post_id,username,post)
     post.delete()
-    posts_list = models.post.objects.filter(user=username)
+    username = request.GET.get('username')
+    currentpage = request.GET.get('currentpage')
+    currentpage = int(currentpage)
+    posts_list = models.post.objects.filter(user=username).order_by('-create_time')
     data=[]
-    for post in posts_list:
-        d = model_to_dict(post)
-        d["content"] = post.content[:30]
+    start_item = (currentpage-1)*10
+    end_item = currentpage*10
+    if end_item > posts_list.count():
+        end_item = posts_list.count()
+    for i in range(start_item,end_item):
+        d = model_to_dict(posts_list[i])
+        d["content"] = posts_list[i].content[:30]
         d['image'] = default_storage.url(d['image'])
         d['image'] = request.build_absolute_uri(d['image'])
         data.append(d)
@@ -108,7 +122,8 @@ def get_user_comments(request):
     username = request.GET.get('username')
     currentpage = request.GET.get('currentpage')
     currentpage = int(currentpage)
-    posts_list = models.comment.objects.filter(user=username).order_by('-create_time')
+    posts_list = models.comment.objects.filter(user=username).annotate(post_title = F('post_id__title')).order_by('-create_time')
+    print(posts_list[1].post_title)
     data=[]
     start_item = (currentpage-1)*10
     end_item = currentpage*10
@@ -117,6 +132,7 @@ def get_user_comments(request):
     for i in range(start_item,end_item):
         d = model_to_dict(posts_list[i])
         d["content"] = posts_list[i].content[:30]
+        d["post_title"]=posts_list[i].post_title
         data.append(d)
     print(data)
     print("返回帖子列表",data)
@@ -125,3 +141,49 @@ def get_user_comments(request):
         "data":data
     }
     return JsonResponse(page_data, safe=False)
+
+
+def user_comment_delete(request):
+    comment_id = request.POST.get("comment_id")
+    username = request.META.get('HTTP_USERNAME')
+    comment = models.comment.objects.filter(user=username,comment_id=comment_id)
+    print(comment)
+    comment.delete()
+    currentpage = request.POST.get('currentpage')
+    currentpage = int(currentpage)
+    posts_list = models.comment.objects.filter(user=username).annotate(post_title = F('post_id__title')).order_by('-create_time')
+    print(posts_list[1].post_title)
+    data=[]
+    start_item = (currentpage-1)*10
+    end_item = currentpage*10
+    if end_item > posts_list.count():
+        end_item = posts_list.count()
+    for i in range(start_item,end_item):
+        d = model_to_dict(posts_list[i])
+        d["content"] = posts_list[i].content[:30]
+        d["post_title"]=posts_list[i].post_title
+        data.append(d)
+    page_data={
+        "total":posts_list.count(),
+        "data":data
+    }
+    return JsonResponse(page_data, safe=False)
+
+
+def user_info(request):
+    username = request.META.get('HTTP_USERNAME')
+    user_obj = models.userInfo.objects.filter(username=username).first()
+    user_info = model_to_dict(user_obj)
+    return JsonResponse(user_info,safe=False)
+
+
+def user_info_update(request):
+    username = request.META.get('HTTP_USERNAME')
+    gender = request.POST.get('gender')
+    signature = request.POST.get('signature')
+    user_obj = models.userInfo.objects.filter(username=username).first()
+    user_obj.gender = gender
+    user_obj.signature = signature
+    user_obj.save()
+    user_info = model_to_dict(user_obj)
+    return JsonResponse({"data":user_info,"msg":'更新成功'},safe=False)

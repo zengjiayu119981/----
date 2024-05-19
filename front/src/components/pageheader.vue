@@ -39,7 +39,6 @@
               <i class="bi bi-person-square">{{username}}</i><span></span>
             </button>
             <div class="dropdown-menu" >
-              <a class="dropdown-item" href="#">个人主页</a>
               <a class="dropdown-item" v-if="username=='未登录'" href="/login/">登录</a>
               <a class="dropdown-item" href="#" @click="logout">退出登录</a>
             </div>

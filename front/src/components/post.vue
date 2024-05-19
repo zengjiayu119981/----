@@ -14,9 +14,7 @@
         <div class="widjet --activity">
             <div class="widjet__head">
                 <h3 class="uk-text-lead">评论</h3>
-                <a href="04_profile.html">发表评论</a>
             </div>
-
             <div class="widjet__body" style="margin-top: 10px;" v-for="comment in comments" :key="comment.id">
                 <div class="widjet-game">
                     <div class="widjet-game__media">{{ comment.user }}</div>
@@ -27,10 +25,12 @@
 
                 </div>
             </div>
+            <el-pagination layout="prev, pager, next" :total="total" @current-change="handlePageChange" :current-page="current_page" />
 
             <div class="widjet__body comment-box">
                 <textarea id="comment" placeholder="请输入评论内容..."></textarea>
                 <button @click="publish()">发表</button>
+                
             </div>
         </div>
     </div>
@@ -42,14 +42,19 @@ import { useRouter } from 'vue-router';
 import { get_post_detail } from "../API/get_post_detail.js"
 import Server from '../utils/require.js';
 import moment from 'moment';
+import {ElPagination} from 'element-plus'
 import 'moment-timezone'
 
 export default {
+    components:{
+        ElPagination
+    },
     setup() {
         const data = ref({})
         const comments = ref([])
-        const page_num = ref(1)
+        const total = ref(100)
         const router = useRouter()
+        const current_page = ref(1)
         const post_id = computed(() => {
             return router.currentRoute.value.params.id
         })
@@ -59,10 +64,11 @@ export default {
             })
 
             Server.post('/api/comments', {
-                post_id: post_id.value
+                post_id: post_id.value,
+                current_page:current_page.value
             }).then(res => {
                 comments.value = res.data
-                page_num.value = res.page_num
+                total.value = res.total
             })
         })
         function publish() {
@@ -77,7 +83,8 @@ export default {
                     post_id: post_id.value
                 }).then(res => {
                     comments.value = res.data
-                    page_num.value = res.page_num
+                    total.value = res.total
+                    current_page.value=1
                 })
             })
         }
@@ -85,11 +92,25 @@ export default {
             console.log(time);
             return moment.utc(time).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss')
         }
+
+        function handlePageChange(num){
+            current_page.value = num
+            Server.post('/api/comments', {
+                post_id: post_id.value,
+                current_page:current_page.value
+            }).then(res => {
+                comments.value = res.data
+                total.value = res.total
+            })
+        }
+
         return {
             data,
             comments,
-            page_num,
+            total,
             post_id,
+            current_page,
+            handlePageChange,
             publish,
             timeformat
         }
@@ -105,6 +126,7 @@ export default {
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 
 .comment-box textarea {
     width: 100%;
