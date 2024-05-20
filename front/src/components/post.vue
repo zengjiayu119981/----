@@ -78,9 +78,10 @@ export default {
                 user: localStorage.getItem('username')
             }).then(response => {
                 console.log(response)
-                alert(response["message"])
+                alert(response["msg"])
                 Server.post('/api/comments', {
-                    post_id: post_id.value
+                    post_id: post_id.value,
+                    current_page:current_page.value
                 }).then(res => {
                     comments.value = res.data
                     total.value = res.total

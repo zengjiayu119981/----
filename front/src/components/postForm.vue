@@ -71,11 +71,11 @@
               'Content-Type': 'multipart/form-data',
             },
           }).then(response => {
-            if (response["message"]=='未查询到登录信息'){
+            if (response["msg"]=='未查询到登录信息'){
               alert("未查询到登录信息")
             }
             else {
-              alert(response["message"])
+              alert(response["msg"])
               this.$router.push('/plate/'+this.post.plate); // 发布成功后跳转到帖子列表
             }
               

@@ -94,13 +94,10 @@ def user_post_delete(request):
     username = request.META.get('HTTP_USERNAME')
     post = models.post.objects.filter(user=username,post_id=post_id)
     post.delete()
-    username = request.GET.get('username')
-    currentpage = request.GET.get('currentpage')
-    currentpage = int(currentpage)
     posts_list = models.post.objects.filter(user=username).order_by('-create_time')
     data=[]
-    start_item = (currentpage-1)*10
-    end_item = currentpage*10
+    start_item = 0
+    end_item = 10
     if end_item > posts_list.count():
         end_item = posts_list.count()
     for i in range(start_item,end_item):
@@ -147,15 +144,12 @@ def user_comment_delete(request):
     comment_id = request.POST.get("comment_id")
     username = request.META.get('HTTP_USERNAME')
     comment = models.comment.objects.filter(user=username,comment_id=comment_id)
-    print(comment)
     comment.delete()
-    currentpage = request.POST.get('currentpage')
-    currentpage = int(currentpage)
     posts_list = models.comment.objects.filter(user=username).annotate(post_title = F('post_id__title')).order_by('-create_time')
     print(posts_list[1].post_title)
     data=[]
-    start_item = (currentpage-1)*10
-    end_item = currentpage*10
+    start_item = 0
+    end_item = 10
     if end_item > posts_list.count():
         end_item = posts_list.count()
     for i in range(start_item,end_item):

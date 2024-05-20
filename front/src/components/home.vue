@@ -127,8 +127,8 @@ setup() {
 
     function post_delete(post_id){
         Server.post("/api/user/post/delete",{  
-            post_id,
-            currentPage:posts_currentpage.value,
+            post_id:post_id,
+            currentpage:posts_currentpage.value,
             "username":localStorage.getItem('username'),
         }).then(response =>{
             posts.value = response.data;

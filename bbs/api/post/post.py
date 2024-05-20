@@ -85,19 +85,19 @@ def create_post(request):
                 if moderation_result == 0:
                     obj.save()
                     response_data = {
-                        'message': f"发布成功",
+                        'msg': f"发布成功",
                         'received_at': timezone.now().isoformat(),
                     }
                     
 
                 else:
                     response_data = {
-                        'message': f"你的言论有不良信息",
+                        'msg': f"你的言论有不良信息",
                         'received_at': timezone.now().isoformat(),
                     }
             else:
                 response_data = {
-                    'message': f"未成功发布",
+                    'msg': f"未成功发布",
                     'received_at': timezone.now().isoformat(),
                 }
         else:
@@ -115,7 +115,6 @@ def create_post(request):
 def get_comments(request):
     post_id = request.POST.get('post_id')
     current_page = request.POST.get('current_page')
-    print(current_page)
     current_page = int(current_page)
     comments = models.comment.objects.filter(post_id=post_id).order_by('-create_time')
     start = (current_page-1)*10
@@ -154,19 +153,19 @@ def create_comment(request):
                 if moderation_result == 0:
                     obj.save()
                     response_data = {
-                        'message': f"发布成功",
+                        'msg': f"发布成功",
                         'received_at': timezone.now().isoformat(),
                     }
                     
 
                 else:
                     response_data = {
-                        'message': f"你的言论有不良信息",
+                        'msg': f"你的言论有不良信息",
                         'received_at': timezone.now().isoformat(),
                     }
             else:
                 response_data = {
-                    'message': f"未成功发布",
+                    'msg': f"未成功发布",
                     'received_at': timezone.now().isoformat(),
                 }
         else:
